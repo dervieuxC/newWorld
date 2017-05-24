@@ -1,0 +1,191 @@
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
+
+CREATE SCHEMA IF NOT EXISTS `dbNewWorld` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci ;
+USE `dbNewWorld` ;
+
+-- -----------------------------------------------------
+-- Table `dbNewWorld`.`Question`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `dbNewWorld`.`Question` (
+  `id` INT NULL ,
+  `libelle` VARCHAR(45) NULL ,
+  `descriptif` VARCHAR(45) NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `dbNewWorld`.`Localité`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `dbNewWorld`.`Localité` (
+  `id` INT NOT NULL ,
+  `codePostal` VARCHAR(45) NULL ,
+  `ville` VARCHAR(45) NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `dbNewWorld`.`User`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `dbNewWorld`.`User` (
+  `id` INT NULL ,
+  `nom` VARCHAR(45) NULL ,
+  `prenom` VARCHAR(45) NULL ,
+  `telephone` VARCHAR(45) NULL ,
+  `type` VARCHAR(45) NULL ,
+  `mail` VARCHAR(45) NULL ,
+  `pseudo` VARCHAR(45) NULL ,
+  `mdp` VARCHAR(45) NULL ,
+  `dateCreation` VARCHAR(45) NULL ,
+  `Question_id` INT NOT NULL ,
+  `Localité_id` INT NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_User_Question1` (`Question_id` ASC) ,
+  INDEX `fk_User_Localité1` (`Localité_id` ASC) ,
+  CONSTRAINT `fk_User_Question1`
+    FOREIGN KEY (`Question_id` )
+    REFERENCES `dbNewWorld`.`Question` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_User_Localité1`
+    FOREIGN KEY (`Localité_id` )
+    REFERENCES `dbNewWorld`.`Localité` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `dbNewWorld`.`Rayon`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `dbNewWorld`.`Rayon` (
+  `id` INT NULL ,
+  `nom` VARCHAR(45) NULL ,
+  PRIMARY KEY (`id`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `dbNewWorld`.`Categorie`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `dbNewWorld`.`Categorie` (
+  `id` INT NULL ,
+  `nom` VARCHAR(45) NULL ,
+  `Rayon_id` INT NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_Categorie_Rayon1` (`Rayon_id` ASC) ,
+  CONSTRAINT `fk_Categorie_Rayon1`
+    FOREIGN KEY (`Rayon_id` )
+    REFERENCES `dbNewWorld`.`Rayon` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `dbNewWorld`.`Produits`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `dbNewWorld`.`Produits` (
+  `id` INT NOT NULL ,
+  `libelle` VARCHAR(45) NULL ,
+  `descriptif` VARCHAR(45) NULL ,
+  `pu` VARCHAR(45) NULL ,
+  `Categorie_id` INT NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_Produits_Categorie` (`Categorie_id` ASC) ,
+  CONSTRAINT `fk_Produits_Categorie`
+    FOREIGN KEY (`Categorie_id` )
+    REFERENCES `dbNewWorld`.`Categorie` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `dbNewWorld`.`PointDeVente`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `dbNewWorld`.`PointDeVente` (
+  `id` INT NULL ,
+  `rue` VARCHAR(45) NULL ,
+  `lundi` VARCHAR(45) NULL ,
+  `mardi` VARCHAR(45) NULL ,
+  `mecredi` VARCHAR(45) NULL ,
+  `jeudi` VARCHAR(45) NULL ,
+  `vendredi` VARCHAR(45) NULL ,
+  `samedi` VARCHAR(45) NULL ,
+  `dimanche` VARCHAR(45) NULL ,
+  `User_id` INT NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_PointDeVente_User1` (`User_id` ASC) ,
+  CONSTRAINT `fk_PointDeVente_User1`
+    FOREIGN KEY (`User_id` )
+    REFERENCES `dbNewWorld`.`User` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `dbNewWorld`.`Producteur`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `dbNewWorld`.`Producteur` (
+  `id` INT NULL ,
+  `IBAN` VARCHAR(45) NULL ,
+  `User_id` INT NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  CONSTRAINT `fk_Producteur_User1`
+    FOREIGN KEY (`User_id` )
+    REFERENCES `dbNewWorld`.`User` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `dbNewWorld`.`consomateur`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `dbNewWorld`.`consomateur` (
+  `id` INT NULL ,
+  `pdvPreferer` VARCHAR(45) NULL ,
+  `User_id` INT NOT NULL ,
+  PRIMARY KEY (`id`) ,
+  INDEX `fk_consomateur_User1` (`User_id` ASC) ,
+  CONSTRAINT `fk_consomateur_User1`
+    FOREIGN KEY (`User_id` )
+    REFERENCES `dbNewWorld`.`User` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `dbNewWorld`.`lot`
+-- -----------------------------------------------------
+CREATE  TABLE IF NOT EXISTS `dbNewWorld`.`lot` (
+  `Produits_id` INT NOT NULL ,
+  `Producteur_id` INT NOT NULL ,
+  `qte` FLOAT NULL ,
+  `dateRamassage` DATE NULL ,
+  PRIMARY KEY (`Produits_id`, `Producteur_id`) ,
+  INDEX `fk_Produits_has_Producteur_Producteur1` (`Producteur_id` ASC) ,
+  INDEX `fk_Produits_has_Producteur_Produits1` (`Produits_id` ASC) ,
+  CONSTRAINT `fk_Produits_has_Producteur_Produits1`
+    FOREIGN KEY (`Produits_id` )
+    REFERENCES `dbNewWorld`.`Produits` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Produits_has_Producteur_Producteur1`
+    FOREIGN KEY (`Producteur_id` )
+    REFERENCES `dbNewWorld`.`Producteur` (`id` )
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

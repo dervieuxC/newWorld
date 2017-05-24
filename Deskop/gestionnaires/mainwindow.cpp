@@ -7,6 +7,9 @@
 #include <QDate>
 #include <QTime>
 #include <QTableWidgetItem>
+#include <QMessageBox>
+#include <QListWidget>
+#include <QListWidgetItem>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -14,6 +17,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     remplireTableauxEmploye();
+    chargerRayon();
+    remplireComboDemandeProduit();
+    //chargerCategorie();
+    //chargerProduit();
 }
 
 MainWindow::~MainWindow()
@@ -57,11 +64,156 @@ void MainWindow::remplireTableauxEmploye()
             }
             numeroDeLigne+=1;
     }
+    ui->pushButtonModifierEmploye->setDisabled(1);
+    ui->pushButtonSuppEmploye->setDisabled(1);
+}
+
+void MainWindow::enableAjouter()
+{
+    QString pseudo=ui->lineEditLogin->text();
+    QString nom=ui->lineEditNom->text();
+    QString prenom=ui->lineEditPrenom->text();
+    QString ssNb=ui->lineEditSSNb->text();
+    if(pseudo!="" && nom!="" && prenom!="" && ssNb.length()==15 && (ui->radioButtonControlleur->isChecked() || ui->radioButtonGestionnaire->isChecked()))
+    {
+        ui->pushButtonAddEmploye->setEnabled(1);
+    }
+    else
+    {
+        ui->pushButtonAddEmploye->setDisabled(1);
+    }
+}
+
+void MainWindow::chargerRayon()
+{
+    ui->listWidgetRayon->clear();
+    QSqlQuery remplireRayon("select idRay,libelleRay from rayon;");
+    int numeroDeLigne=0;
+    while(remplireRayon.next())
+    {
+        QString newRayon=remplireRayon.value(1).toString();
+        qDebug()<<newRayon;
+        QListWidgetItem *newItem = new QListWidgetItem;
+           newItem->setText(newRayon);
+           newItem->setData(32,remplireRayon.value(0).toString());
+           ui->listWidgetRayon->insertItem(numeroDeLigne, newItem);
+          numeroDeLigne+=1;
+    }
+}
+
+void MainWindow::chargerCategorie(QString idRay)
+{
+    ui->listWidgetCategorie->clear();
+    QSqlQuery remplireCategorie("select idCat,libelleCat from categorie where idRay="+ idRay+" and supprimeCat=0;");
+    int numeroDeLigne=0;
+    while(remplireCategorie.next())
+    {
+        QString newCategorie=remplireCategorie.value(1).toString();
+        qDebug()<<newCategorie;
+        QListWidgetItem *newItem = new QListWidgetItem;
+           newItem->setText(newCategorie);
+           newItem->setData(32,remplireCategorie.value(0).toString());
+           ui->listWidgetCategorie->insertItem(numeroDeLigne, newItem);
+          numeroDeLigne+=1;
+    }
+}
+
+void MainWindow::chargerProduit(QString idCategorie)
+{
+    ui->listWidgetProduit->clear();
+    QSqlQuery remplireProduit("select idProd,libelleProd from produit where idCat="+idCategorie+" and etatProd='VAL' and supprimeProd=0;");
+    int numeroDeLigne=0;
+    while(remplireProduit.next())
+    {
+        QString newProduit=remplireProduit.value(1).toString();
+        qDebug()<<newProduit;
+        QListWidgetItem *newItem = new QListWidgetItem;
+           newItem->setText(newProduit);
+           newItem->setData(32,remplireProduit.value(0).toString());
+           ui->listWidgetProduit->insertItem(numeroDeLigne, newItem);
+          numeroDeLigne+=1;
+    }
+}
+
+void MainWindow::remplireComboDemandeProduit()
+{
+    QSqlQuery demandeProduit("select libelleProd from produit where etatProd='ATT';");
+    while(demandeProduit.next())
+    {
+        QString newDemande=demandeProduit.value(0).toString();
+        ui->comboBoxDemandeProd->addItem(newDemande);
+    }
 }
 
 void MainWindow::on_pushButtonModifierEmploye_clicked()
 {
+    //id=ui->tableWidgetEmploye->item(row,0)->data(32).toString();
+    qDebug() << id;
+    QString pseudo=ui->lineEditLogin->text();
+    QString nom=ui->lineEditNom->text();
+    QString prenom=ui->lineEditPrenom->text();
+    QString mail=ui->lineEditEmail->text();
+    QString codePostal=ui->lineEditPostalCode->text();
+    QString ville=ui->lineEditTown->text();
+    QString adresse=ui->lineEditAdress->text();
+    QSqlQuery newquery("select idPers,nomPers,prenomPers,emailPers,codePostalPers,villePers,adressePers,loginPers from personnel where idPers="+ id +";");
+    newquery.exec();
+    newquery.next();
+    QString nomBDD=newquery.value(1).toString();
+    qDebug()<<nomBDD;
+    QString prenomBDD=newquery.value(2).toString();
+    QString emailBDD=newquery.value(3).toString();
+    QString cpBDD=newquery.value(4).toString();
+    QString villeBDD=newquery.value(5).toString();
+    QString adresseBDD=newquery.value(6).toString();
+    QString pseudoBDD=newquery.value(8).toString();
+    qDebug() << pseudo+pseudoBDD;
+    QMessageBox::StandardButton reply;
+      reply = QMessageBox::question(this, "Validation modification", "vouler vous réellement modifier le profil de: "+ nomBDD + " " + prenomBDD,
+                                    QMessageBox::Yes|QMessageBox::No);
+      if (reply == QMessageBox::Yes) {
+        qDebug() << "Yes was clicked";
+        if (pseudo!=pseudoBDD)
+        {
+            QSqlQuery newUpdate("update personnel set loginPers='"+ pseudo+"' where idPers="+id+";");
+            newUpdate.exec();
+        }
+        if(nom!=nomBDD)
+        {
+            QSqlQuery newUpdate("update personnel set nomPers='"+ nom +"' where idPers="+id+";");
+            newUpdate.exec();
+        }
+        if(prenom!=prenomBDD)
+        {
+            QSqlQuery newUpdate("update personnel set prenomPers='"+ prenom+"' where idPers="+id+";");
+            newUpdate.exec();
+        }
+        if(mail!=emailBDD)
+        {
+            QSqlQuery newUpdate("update personnel set emailPers='"+ mail+"' where idPers="+id+";");
+            newUpdate.exec();
+        }
+        if(codePostal!=cpBDD)
+        {
+            QSqlQuery newUpdate("update personnel set codePostalPers='"+ codePostal+"' where idPers="+id+";");
+            newUpdate.exec();
+        }
+        if(ville!=villeBDD)
+        {
+            QSqlQuery newUpdate("update personnel set villePers='"+ ville+"' where idPers="+id+";");
+            newUpdate.exec();
+        }
+        if(adresse!=adresseBDD)
+        {
+            QSqlQuery newUpdate("update personnel set adressePers='"+ adresse+"' where idPers="+id+";");
+            newUpdate.exec();
+        }
 
+      } else {
+        qDebug() << "Yes was *not* clicked";
+      }
+
+    remplireTableauxEmploye();
 }
 
 void MainWindow::on_pushButtonAddEmploye_clicked()
@@ -89,8 +241,7 @@ void MainWindow::on_pushButtonAddEmploye_clicked()
     QString codePostal=ui->lineEditPostalCode->text();
     QString pays="France";
     QString ville=ui->lineEditTown->text();
-    QString adresse1=ui->lineEditAdress->text();
-    QString adresse2=ui->lineEditAdress2->text();
+    QString adresse=ui->lineEditAdress->text();
     QString pseudo=ui->lineEditLogin->text();
     QString type;
     if (ui->radioButtonControlleur->isChecked())
@@ -125,9 +276,7 @@ void MainWindow::on_pushButtonAddEmploye_clicked()
     requete+="','";
     requete+=ville;
     requete+="','";
-    requete+=adresse1;
-    requete+="','";
-    requete+=adresse2;
+    requete+=adresse;
     requete+="','";
     requete+=pseudo;
     requete+="',";
@@ -155,23 +304,38 @@ void MainWindow::clearLineEditPersonnel()
     ui->lineEditPostalCode->clear();
     ui->lineEditTown->clear();
     ui->lineEditAdress->clear();
-    ui->lineEditAdress2->clear();
     ui->lineEditSSNb->clear();
     ui->lineEditEmail->clear();
+    ui->pushButtonSuppEmploye->setDisabled(1);
+    ui->pushButtonModifierEmploye->setDisabled(1);
 }
 
 void MainWindow::on_pushButtonSuppEmploye_clicked()
 {
-
+    QSqlQuery newquery("select nomPers,prenomPers from personnel where idPers="+ id +";");
+    newquery.exec();
+    newquery.next();
+    QString nomBDD=newquery.value(0).toString();
+    QString prenomBDD=newquery.value(1).toString();
+    QMessageBox::StandardButton reply;
+      reply = QMessageBox::question(this, "Validation supression", "vouler vous réellement supprimer "+ nomBDD + " " + prenomBDD,
+                                    QMessageBox::Yes|QMessageBox::No);
+      if (reply == QMessageBox::Yes) {
+        qDebug() << "Yes was clicked";
+        QSqlQuery newDelete ("update personnel set supprimePers=1 where idPers="+id);
+        newDelete.exec();
+      } else {
+        qDebug() << "Yes was *not* clicked";
+      }
+      remplireTableauxEmploye();
 }
 
 void MainWindow::on_tableWidgetEmploye_cellClicked(int row, int column)
 {
     QList<QTableWidgetItem*> ligneRecup=ui->tableWidgetEmploye->selectedItems();
-    QString id;
     id=ui->tableWidgetEmploye->item(row,0)->data(32).toString();
     qDebug() << id;
-    QSqlQuery recupPersonnel("select loginPers,nomPers,prenomPers,emailPers,ssNb,codePostalPers,paysPers,villePers,adresse1Pers,adresse2Pers from personnel where idPers="+id);
+    QSqlQuery recupPersonnel("select loginPers,nomPers,prenomPers,emailPers,ssNb,codePostalPers,paysPers,villePers,adressePers from personnel where idPers="+id);
     recupPersonnel.exec();
     recupPersonnel.first();
     ui->lineEditLogin->setText(recupPersonnel.value(0).toString());
@@ -182,10 +346,208 @@ void MainWindow::on_tableWidgetEmploye_cellClicked(int row, int column)
     ui->lineEditPostalCode->setText((recupPersonnel.value(5).toString()));
     ui->lineEditTown->setText(recupPersonnel.value(7).toString());
     ui->lineEditAdress->setText(recupPersonnel.value(8).toString());
-    ui->lineEditAdress2->setText(recupPersonnel.value(9).toString());
+    ui->pushButtonSuppEmploye->setEnabled(1);
+    ui->pushButtonModifierEmploye->setEnabled(1);
 }
 
 void MainWindow::on_pushButtonClearPers_clicked()
 {
     clearLineEditPersonnel();
 }
+
+
+
+void MainWindow::on_lineEditLogin_textChanged(const QString &arg1)
+{
+    enableAjouter();
+}
+
+void MainWindow::on_lineEditPrenom_textChanged(const QString &arg1)
+{
+    enableAjouter();
+}
+
+void MainWindow::on_lineEditNom_textChanged(const QString &arg1)
+{
+    enableAjouter();
+}
+
+void MainWindow::on_lineEditSSNb_textChanged(const QString &arg1)
+{
+    enableAjouter();
+}
+
+void MainWindow::on_radioButtonGestionnaire_clicked()
+{
+    enableAjouter();
+}
+
+void MainWindow::on_radioButtonControlleur_clicked()
+{
+    enableAjouter();
+}
+
+void MainWindow::on_listWidgetRayon_itemClicked(QListWidgetItem *item)
+{
+    ui->listWidgetProduit->clear();
+    ui->listWidgetCategorie->clear();
+    QString idRay=item->data(32).toString();
+    qDebug()<<idRay;
+    chargerCategorie(idRay);
+    ui->lineEditCategorie->setEnabled(1);
+    ui->lineEditProduit->setDisabled(1);
+    ui->pushButtonAddProduit->setDisabled(1);
+    ui->lineEditCategorie->clear();
+    ui->lineEditProduit->clear();
+    idRayon=idRay;
+    ui->pushButtonDeleteRayon->setEnabled(1);
+    ui->pushButtonDeleteCat->setDisabled(1);
+    ui->pushButtonDeleteProd->setDisabled(1);
+}
+
+void MainWindow::on_listWidgetCategorie_itemClicked(QListWidgetItem *item)
+{
+    ui->listWidgetProduit->clear();
+    QString idCategorie=item->data(32).toString();
+    qDebug()<<idCategorie;
+    chargerProduit(idCategorie);
+    ui->lineEditProduit->setEnabled(1);
+    idCat=idCategorie;
+    ui->pushButtonDeleteCat->setEnabled(1);
+    ui->pushButtonDeleteProd->setDisabled(1);
+}
+
+void MainWindow::on_pushButtonAddRayon_clicked()
+{
+    QString newRayon=ui->lineEditRayon->text();
+    QSqlQuery maxId("select ifnull(max(idRay),0)+1 from rayon;");
+    maxId.exec();
+    maxId.next();
+    int idMax=maxId.value(0).toInt();
+    qDebug()<<idMax;
+    QString newId=QString::number(idMax);
+    qDebug()<<newId+" "+newRayon;
+    QSqlQuery newquery("insert into rayon(idRay,libelleRay) values("+newId+",'"+newRayon+"');");
+    newquery.exec();
+    chargerRayon();
+
+}
+
+void MainWindow::on_pushButtonAddCategorie_clicked()
+{
+    QString newCat=ui->lineEditCategorie->text();
+    QSqlQuery maxId("select ifnull(max(idCat),0)+1 from categorie;");
+    maxId.exec();
+    maxId.next();
+    int idMax=maxId.value(0).toInt();
+    qDebug()<<idMax;
+    QString newId=QString::number(idMax);
+    qDebug()<<newId+" "+newCat;
+    QSqlQuery newquery("insert into categorie values("+newId+",'"+newCat+"',"+ idRayon+");");
+    newquery.exec();
+}
+
+void MainWindow::on_pushButtonAddProduit_clicked()
+{
+    QString newProd=ui->lineEditProduit->text();
+    QSqlQuery maxId("select ifnull(max(idProd),0)+1 from produit;");
+    maxId.exec();
+    maxId.next();
+    QString newId=maxId.value(0).toString();
+    qDebug()<<newId+" "+newProd;
+    QSqlQuery newquery("insert into produit(idProd,libelleProd,idCat) values("+newId+",'"+newProd+"',"+ idCat+");");
+    newquery.exec();
+}
+
+void MainWindow::on_lineEditProduit_textChanged(const QString &arg1)
+{
+    if ( arg1=="")
+    {
+        ui->pushButtonAddProduit->setDisabled(1);
+    }
+    else
+    {
+        ui->pushButtonAddProduit->setEnabled(1);
+    }
+}
+
+void MainWindow::on_lineEditCategorie_textChanged(const QString &arg1)
+{
+    if ( arg1=="")
+    {
+        ui->pushButtonAddCategorie->setDisabled(1);
+    }
+    else
+    {
+        ui->pushButtonAddCategorie->setEnabled(1);
+    }
+}
+
+void MainWindow::on_pushButtonDeleteRayon_clicked()
+{
+    if (ui->listWidgetCategorie->count()==0)
+    {
+        QSqlQuery newDelete("delete from rayon where idRay="+idRayon);
+        chargerRayon();
+    }
+    else
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Ce Rayon n'a pas put être modifier car il possède toujours des catégories");
+        msgBox.exec();
+    }
+}
+
+void MainWindow::on_pushButtonDeleteCat_clicked()
+{
+    if (ui->listWidgetProduit->count()==0)
+    {
+        QSqlQuery newDelete("delete from categorie where idCat="+idCat+";");
+        chargerCategorie(idRayon);
+    }
+    else
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Cette catégorie n'a pas put être supprimer car il reste au moins un produit");
+        msgBox.exec();
+    }
+}
+
+void MainWindow::on_pushButtonDeleteProd_clicked()
+{
+    qDebug()<<idProd;
+    QSqlQuery newDelete("delete from produit where idProd="+idProd+";");
+    newDelete.exec();
+    chargerProduit(idCat);
+}
+
+void MainWindow::on_lineEditRayon_textChanged(const QString &arg1)
+{
+    if ( arg1=="")
+    {
+        ui->pushButtonAddRayon->setDisabled(1);
+    }
+    else
+    {
+        ui->pushButtonAddRayon->setEnabled(1);
+    }
+}
+
+void MainWindow::on_listWidgetProduit_itemClicked(QListWidgetItem *item)
+{
+    QString idProduit=item->data(32).toString();
+    qDebug()<<idProduit;
+    idProd=idProduit;
+    ui->pushButtonDeleteProd->setEnabled(1);
+}
+
+
+
+void MainWindow::on_comboBoxDemandeProd_activated(const QString &arg1)
+{
+    qDebug()<<arg1;
+    QSqlQuery recupDescri("select descriptionProd from produit where libelleProd='"+arg1+"';");
+    QString description=recupDescri.value(0).toString();
+
+}
+

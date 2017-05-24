@@ -1,0 +1,91 @@
+#menu-bar li 
+{
+	padding: 0px 6px 0px 6px;
+	float: left;
+	position: relative;
+	list-style: none;
+	margin:1%;
+}
+
+#Menu-bar{
+	height:5%;
+	background-image:linear-gradient(grey, #c6c5c0);
+}
+
+html
+{
+	background-color:#e3dddc;
+}
+
+body{
+	background-image:url("mondeBlanc.png");
+}
+
+#bas
+{
+height:auto;
+position:absolute;
+bottom:0;
+left:0;
+right:0;
+      background-color:#c6c5c0;
+}
+.titre 
+{
+color:#1e5ae7;
+}
+
+#menu_bas
+{
+width:60%;
+height:140px;
+       margin-left:auto;
+       margin-left:auto;
+       margin-top:10px;
+       padding-top:15px;
+}
+
+#menu_bas .colonne
+{
+width:100px;
+float:left;
+      margin-left:15;
+      margin-right:15;
+}
+
+#boucher{
+position:absolute;
+left:80%;
+top:30%;
+height:185px;}
+#jardinier{
+position:absolute;
+left:80%;
+top:50%;
+height:200px;
+}
+
+
+#mAccueil
+{
+	float:left;
+	margin-left:50px;
+	margin-top:12%;
+	text-align:center;
+	color:red;
+	font-family:;
+	font-size: 25px;
+}
+
+a{
+color:black;
+text-decoration: none;
+}
+
+#inscription{
+position:absolute;
+left:51%;
+top:35%;
+}
+
+
