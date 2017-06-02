@@ -1,49 +1,23 @@
-<html>
 <head>
-<link rel="stylesheet" type="text/css" href="./style.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Material Design Bootstrap</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="css/mdb.min.css" rel="stylesheet">
+    <!-- Your custom styles (optional) -->
+    <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
-<?php
-include 'tradFr.php';
-
-?>
-
-<ul id="menu-bar">
-<li><a href="index.php">NW</a></li>
-<li><a href="#"><?php echo $menuAcheter ?></a>
-</li>
-<li><a href="#"><?php echo $menuProduire ?></a>
-</li>
-<li><a href="#"><?php echo $menuDistribuer ?></a></li>
-<li><a href="inscription.php"><?php echo $menuInscription ?></a></li>
-</ul>
-</br>
-<div id="mAccueil">
-<p><?php
-echo $messageAccueil1;
-?></p>
-<p><?php
-echo $messageAccueil2;
-?><p>
-<p><?php
-echo $messageAccueil3;
-?></p>
-<p><?php
-echo $messageAccueil4;
-?></p>
-<p><?php
-echo $messageAccueil5;
-?></p>
-</div>
-</br>
-
+<?php include "haut.php"; ?>
+Inscription terminer
 <?php
 include 'fonction.php';
 inscription();
-//chaine_aleatoire(8);
 ?>
-<?php
-include 'bas.php'
-?>
+<a class="btn btn-primary" href="index.php" role="button">Retour au site</a>
 </body>
-</html>

@@ -28,6 +28,7 @@ public:
     void chargerCategorie(QString idRay);
     void chargerProduit(QString idCat);
     void remplireComboDemandeProduit();
+    void test();
 
 private slots:
     /**
