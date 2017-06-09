@@ -29,6 +29,7 @@ public:
     void chargerProduit(QString idCat);
     void remplireComboDemandeProduit();
     void test();
+    void iniTableProducteur();
 
 private slots:
     /**
@@ -88,6 +89,10 @@ private slots:
     void on_listWidgetProduit_itemClicked(QListWidgetItem *item);
 
     void on_comboBoxDemandeProd_activated(const QString &arg1);
+    void on_pushButtonAddNewProd_clicked();
+
+    void on_pushButtonNAddNewProd_clicked();
+
 private:
     Ui::MainWindow *ui;
     QString id;

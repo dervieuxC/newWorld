@@ -21,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
     remplireComboDemandeProduit();
     //chargerCategorie();
     //chargerProduit();
+    //iniDemandeAddProd();
+    iniTableProducteur();
 }
 
 MainWindow::~MainWindow()
@@ -43,7 +45,6 @@ void MainWindow::remplireTableauxEmploye()
 {
     ui->tableWidgetEmploye->clear();
     QSqlQuery newquery("select idPers,nomPers,prenomPers,emailPers,loginPers,dateEmbauchePers from personnel where supprimePers=0");
-    int nombreDeColonne=6;
     int nombreDEmploye=newquery.size();
     qDebug() << nombreDEmploye;
     ui->tableWidgetEmploye->setRowCount(nombreDEmploye);
@@ -101,23 +102,6 @@ void MainWindow::chargerRayon()
     }
 }
 
-void MainWindow::chargerCategorie(QString idRay)
-{
-    ui->listWidgetCategorie->clear();
-    QSqlQuery remplireCategorie("select idCat,libelleCat from categorie where idRay="+ idRay+" and supprimeCat=0;");
-    int numeroDeLigne=0;
-    while(remplireCategorie.next())
-    {
-        QString newCategorie=remplireCategorie.value(1).toString();
-        qDebug()<<newCategorie;
-        QListWidgetItem *newItem = new QListWidgetItem;
-           newItem->setText(newCategorie);
-           newItem->setData(32,remplireCategorie.value(0).toString());
-           ui->listWidgetCategorie->insertItem(numeroDeLigne, newItem);
-          numeroDeLigne+=1;
-    }
-}
-
 void MainWindow::chargerProduit(QString idCategorie)
 {
     ui->listWidgetProduit->clear();
@@ -135,15 +119,7 @@ void MainWindow::chargerProduit(QString idCategorie)
     }
 }
 
-void MainWindow::remplireComboDemandeProduit()
-{
-    QSqlQuery demandeProduit("select libelleProd from produit where etatProd='ATT';");
-    while(demandeProduit.next())
-    {
-        QString newDemande=demandeProduit.value(0).toString();
-        ui->comboBoxDemandeProd->addItem(newDemande);
-    }
-}
+
 
 void MainWindow::on_pushButtonModifierEmploye_clicked()
 {
@@ -546,8 +522,98 @@ void MainWindow::on_listWidgetProduit_itemClicked(QListWidgetItem *item)
 void MainWindow::on_comboBoxDemandeProd_activated(const QString &arg1)
 {
     qDebug()<<arg1;
+    QString texte="select descriptionProd from produit where libelleProd='"+arg1+"';";
     QSqlQuery recupDescri("select descriptionProd from produit where libelleProd='"+arg1+"';");
+    qDebug()<< texte;
+    recupDescri.next();
     QString description=recupDescri.value(0).toString();
+    ui->textEditDescriptionAddProd->setText(description);
+    ui->lineEditAddProd->setText(arg1);
+    ui->pushButtonNAddNewProd->setEnabled(true);
+    ui->pushButtonAddNewProd->setEnabled(true);
 
 }
 
+void MainWindow::chargerCategorie(QString idRay)
+{
+    ui->listWidgetCategorie->clear();
+    QSqlQuery remplireCategorie("select idCat,libelleCat from categorie where idRay="+ idRay+" and supprimeCat=0;");
+    int numeroDeLigne=0;
+    while(remplireCategorie.next())
+    {
+        QString newCategorie=remplireCategorie.value(1).toString();
+        qDebug()<<newCategorie;
+        QListWidgetItem *newItem = new QListWidgetItem;
+           newItem->setText(newCategorie);
+           newItem->setData(32,remplireCategorie.value(0).toString());
+           ui->listWidgetCategorie->insertItem(numeroDeLigne, newItem);
+          numeroDeLigne+=1;
+    }
+}
+
+void MainWindow::on_pushButtonAddNewProd_clicked()
+{
+    QString description=ui->textEditDescriptionAddProd->toPlainText();
+    QString libelle=ui->lineEditAddProd->text();
+    int index=ui->comboBoxDemandeProd->currentIndex();
+    QString idProd=ui->comboBoxDemandeProd->itemData(index).toString();
+    qDebug()<<idProd;
+    QSqlQuery changementProd("update produit set libelleProd='"+libelle+"',descriptionProd='"+description+"',etatProd='VAL' where idProd="+idProd+";");
+    changementProd.exec();
+    ui->comboBoxDemandeProd->clear();
+    remplireComboDemandeProduit();
+}
+
+void MainWindow::remplireComboDemandeProduit()
+{
+    QSqlQuery demandeProduit("select libelleProd,idProd from produit where etatProd='ATT';");
+    while(demandeProduit.next())
+    {
+        QString id=demandeProduit.value(1).toString();
+        qDebug()<<id;
+        QString libelle=demandeProduit.value(0).toString();
+        ui->comboBoxDemandeProd->addItem(libelle,id);
+    }
+}
+
+
+
+void MainWindow::on_pushButtonNAddNewProd_clicked()
+{
+    QString description=ui->textEditDescriptionAddProd->toPlainText();
+    QString libelle=ui->lineEditAddProd->text();
+    int index=ui->comboBoxDemandeProd->currentIndex();
+    QString idProd=ui->comboBoxDemandeProd->itemData(index).toString();
+    qDebug()<<idProd;
+    QSqlQuery changementProd("update produit set libelleProd='"+libelle+"',descriptionProd='"+description+"',etatProd='REF' where idProd="+idProd+";");
+    changementProd.exec();
+    ui->comboBoxDemandeProd->clear();
+    remplireComboDemandeProduit();
+}
+/*
+ *
+ *
+ *  Partie Visite
+ *
+ *
+ **/
+
+void MainWindow::iniTableProducteur()
+{
+  QSqlQuery requeteProducteur("select nomU,prenomU,villeU from utilisateur where idTypeU=3;");
+  int numeroDeLigne=0;
+  while(requeteProducteur.next())
+  {
+      for(int i=0;i < 3;i++)
+      {
+
+          QString resultat=requeteProducteur.value(i).toString();
+          qDebug()<<resultat;
+          QTableWidgetItem * resultatConvertie= new QTableWidgetItem(resultat);
+          ui->tableWidgetlistProducteur->setItem(numeroDeLigne,i,resultatConvertie);
+      }
+      numeroDeLigne+=1;
+
+
+  }
+}

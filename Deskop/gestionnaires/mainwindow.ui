@@ -17,14 +17,17 @@
    <widget class="QTabWidget" name="tabWidgetGestionnaire">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>30</x>
       <y>110</y>
       <width>1581</width>
       <height>741</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>3</number>
     </property>
     <widget class="QWidget" name="tabProduit">
      <property name="cursor">
@@ -91,7 +94,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit">
+     <widget class="QLineEdit" name="lineEditAddProd">
       <property name="geometry">
        <rect>
         <x>790</x>
@@ -101,7 +104,10 @@
        </rect>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton">
+     <widget class="QPushButton" name="pushButtonAddNewProd">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>740</x>
@@ -114,7 +120,10 @@
        <string>Accepter</string>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_2">
+     <widget class="QPushButton" name="pushButtonNAddNewProd">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>850</x>
@@ -269,13 +278,13 @@
        </item>
       </layout>
      </widget>
-     <widget class="QPlainTextEdit" name="plainTextEditDemandeProd">
+     <widget class="QTextEdit" name="textEditDescriptionAddProd">
       <property name="geometry">
        <rect>
         <x>80</x>
         <y>480</y>
-        <width>631</width>
-        <height>181</height>
+        <width>621</width>
+        <height>191</height>
        </rect>
       </property>
      </widget>
@@ -284,12 +293,12 @@
      <zorder>pushButtonDeleteCat</zorder>
      <zorder>pushButtonDeleteProd</zorder>
      <zorder>comboBoxDemandeProd</zorder>
-     <zorder>lineEdit</zorder>
-     <zorder>pushButton</zorder>
-     <zorder>pushButton_2</zorder>
+     <zorder>lineEditAddProd</zorder>
+     <zorder>pushButtonAddNewProd</zorder>
+     <zorder>pushButtonNAddNewProd</zorder>
      <zorder>label_17</zorder>
      <zorder>label_18</zorder>
-     <zorder>plainTextEditDemandeProd</zorder>
+     <zorder>textEditDescriptionAddProd</zorder>
     </widget>
     <widget class="QWidget" name="tabPersonnel">
      <attribute name="title">
@@ -672,58 +681,55 @@
      <attribute name="title">
       <string>Statistique</string>
      </attribute>
-     <widget class="QCustomPlot" name="widget" native="true">
-      <property name="geometry">
-       <rect>
-        <x>170</x>
-        <y>180</y>
-        <width>120</width>
-        <height>80</height>
-       </rect>
-      </property>
-     </widget>
     </widget>
     <widget class="QWidget" name="tabPaye">
      <property name="accessibleName">
       <string/>
      </property>
      <attribute name="title">
-      <string>Fiche de paye</string>
+      <string>Visite</string>
      </attribute>
-     <widget class="QLabel" name="label_2">
+     <widget class="QTableWidget" name="tableWidgetlistProducteur">
       <property name="geometry">
        <rect>
         <x>50</x>
+        <y>30</y>
+        <width>411</width>
+        <height>601</height>
+       </rect>
+      </property>
+      <column>
+       <property name="text">
+        <string>Nom</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Prenom</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Ville</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>dernière visite</string>
+       </property>
+      </column>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
         <y>10</y>
-        <width>67</width>
+        <width>91</width>
         <height>21</height>
        </rect>
       </property>
       <property name="text">
-       <string>TextLabel</string>
-      </property>
-     </widget>
-     <widget class="QListWidget" name="listWidget">
-      <property name="geometry">
-       <rect>
-        <x>30</x>
-        <y>60</y>
-        <width>641</width>
-        <height>311</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QPushButton" name="pushButton_4">
-      <property name="geometry">
-       <rect>
-        <x>570</x>
-        <y>390</y>
-        <width>95</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>&amp;Payer</string>
+       <string>Producteur</string>
       </property>
      </widget>
     </widget>
@@ -782,14 +788,6 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>QCustomPlot</class>
-   <extends>QWidget</extends>
-   <header>qcustomplot.h</header>
-   <container>1</container>
-  </customwidget>
- </customwidgets>
  <tabstops>
   <tabstop>tabWidgetGestionnaire</tabstop>
   <tabstop>lineEditLogin</tabstop>
@@ -807,8 +805,6 @@
   <tabstop>pushButtonModifierEmploye</tabstop>
   <tabstop>tableWidgetEmploye</tabstop>
   <tabstop>pushButtonSuppEmploye</tabstop>
-  <tabstop>listWidget</tabstop>
-  <tabstop>pushButton_4</tabstop>
  </tabstops>
  <resources/>
  <connections/>
